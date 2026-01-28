@@ -8,8 +8,21 @@ AI 客户端模块
 
 import os
 from typing import Any, Dict, List, Optional
+import yaml
 
 from litellm import completion
+
+
+def load_local_config():
+    """加载本地配置文件"""
+    local_config_path = os.path.join(os.path.dirname(__file__), "..", "..", "config", "local_config.yaml")
+    if os.path.exists(local_config_path):
+        try:
+            with open(local_config_path, 'r', encoding='utf-8') as f:
+                return yaml.safe_load(f) or {}
+        except Exception:
+            pass  # 如果本地配置文件有问题，返回空字典
+    return {}
 
 
 class AIClient:
@@ -30,8 +43,17 @@ class AIClient:
                 - NUM_RETRIES: 重试次数（可选）
                 - FALLBACK_MODELS: 备用模型列表（可选）
         """
+        # 加载本地配置
+        local_config = load_local_config()
+
+        # API密钥优先级: 环境变量(GitHub Secrets) > 本地配置文件 > config参数
+        # GitHub Actions 环境变量优先级最高，以确保在 CI/CD 环境中使用安全的密钥
+        github_secret_key = os.environ.get("MINIMAX_API_KEY", "") or os.environ.get("AI_API_KEY", "")
+        local_api_key = local_config.get("ai", {}).get("api_key", "")
+        config_api_key = config.get("API_KEY", "")
+
         self.model = config.get("MODEL", "deepseek/deepseek-chat")
-        self.api_key = config.get("API_KEY") or os.environ.get("AI_API_KEY", "")
+        self.api_key = github_secret_key or local_api_key or config_api_key
         self.api_base = config.get("API_BASE", "")
         self.temperature = config.get("TEMPERATURE", 1.0)
         self.max_tokens = config.get("MAX_TOKENS", 5000)
