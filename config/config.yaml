@@ -327,15 +327,26 @@ ai:
   #   - gemini/gemini-2.5-flash (Google Gemini)
   #   - anthropic/claude-3-5-sonnet (Anthropic)
   #   - ollama/llama3 (本地 Ollama)
-  #   - minimax/MiniMax-M2.1 (Minimax)
   # 完整列表: https://docs.litellm.ai/docs/providers
   # 如果你对于看英文文档比较头疼，那么可以点击页面右下角的 【Ask AI】 ,用中文询问怎么配置
 
-  model: 'minimax/MiniMax-M2.1'  # 使用 Minimax M2.1 模型
+  model: 'deepseek/deepseek-chat'
 
   api_key: '' # API Key（建议使用环境变量 AI_API_KEY）
 
-  api_base: 'https://api.minimax.io/v1' # Minimax API 基础 URL
+  api_base:
+    '' # 自定义 API 端点（可选，大多数情况留空）
+    # 示例: https://api.openai.com/v1（自建代理或兼容接口）
+    #
+    # 💡 超级重要：连接任意兼容 OpenAI 协议的模型商
+    # 如果你使用的模型商不在上述支持列表中，但提供了兼容 OpenAI 的接口：
+    #
+    # 1. api_base 填写: 服务商提供的接口地址
+    #    例如: https://api.example.com/v1
+    #
+    # 2. model 填写: "openai/" + 实际模型名称
+    #    例如: openai/deepseek-ai/DeepSeek-V3
+    #    (原理：前缀 openai/ 强制 LiteLLM 使用 OpenAI 协议格式进行通信)
 
   timeout: 120 # 请求超时（秒）
 
@@ -349,7 +360,7 @@ ai:
   # 高级选项
   num_retries: 1 # 失败重试次数
   fallback_models: [] # 备用模型列表（可选）
-    # 示例: ["minimax/MiniMax-M2.1-lightning", "openai/gpt-4o-mini"]
+    # 示例: ["openai/gpt-4o-mini", "openai/deepseek-ai/DeepSeek-V3"]
 
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   # 额外参数 (高级选项，一般无需修改)
